@@ -31,10 +31,10 @@ io.on("connection", ()=>{
     //Emit online users to all connected clients
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-    socket.on("dicconnect", ()=>{
+    socket.on("diconnect", ()=>{
         console.log("User Disconnected", userId);
         delete userSocketMap[userId];
-        io.omit("getOnlineUsers", Object.keys(userSocketMap))
+        io.emit("getOnlineUsers", Object.keys(userSocketMap))
     })
 })
 
