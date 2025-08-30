@@ -22,7 +22,7 @@ export const io = new Server(server, {
 export const userSocketMap = {}; // {userId: socketId}
 
 //socket.io connection handler
-io.on("connection", ()=>{
+io.on("connection", (socket)=>{
     const userId = socket.handshake.query.userId;
     console.log("User connected", userId);
 
