@@ -1,10 +1,43 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
 import assets, { messagesDummyData } from '../assets/assets'
 import { formatMessageTime } from '../lib/utils';
+import { ChatContext } from '../../context/ChatContext';
+import { AuthContext } from '../../context/AuthContext';
+import toast from 'react-hot-toast';
 
-function ChatContainer({ selectedUser, setSelectedUser }) {
+function ChatContainer() {
+
+  const{message, selectedUser, setSelectedUser, sendMessage, getMessages } = useContext(ChatContext)
+  const{ authUser, onlineUsers } = useContext(AuthContext)
+
 
   const scrollEnd = useRef()
+
+  const [input, setInput] = useState('');
+
+  //handle sending message
+  const handleSendMessage = async (e)=>{
+    e.preventDefault();
+    if(input.trim()==="") return null;
+    await sendMessage({text: input.trim()});
+    setInput("")
+  }
+
+  //Handle sending an image
+  const handleSendImage = async (e) =>{
+    const file = e.target.files[0];
+    if(!file || !file.type.startWith("images/")){
+      toast.error("select an iamge file")
+      return;
+    }
+    const reader = new FileReader();
+
+    reader.onloadend = async()=>{
+      await sendMessage({image: reader.result})
+      e.target.value = ""
+    }
+    reader.readAsDataURL(file)
+  }
 
   useEffect(()=>{
     if(scrollEnd.current){
@@ -68,14 +101,14 @@ function ChatContainer({ selectedUser, setSelectedUser }) {
       {/* -----bottom area------ */}
       <div className='absolute bottom-0 left-0 right-0 flex items-center gap-3 p-3'>
         <div className='flex-1 flex items-center bg-gray-100/12 px-3 rounded-full'>
-          <input type="text" placeholder='Send a message' 
+          <input onChange={(e)=> setInput(e.target.value)} value={input} onKeyDown={(e)=> e.key === "Enter" ? handleSendMessage(e): null} type="text" placeholder='Send a message' 
           className='flex-1 text-sm p-3 border-none rounded-lg outline-none text-white placeholder-gray-400'/>
           <input type="file" id='image' accept='image/png, image/jpeg' hidden />
           <label htmlFor="image">
             <img src={assets.gallery_icon} alt="" className='w-5 mr-2 cursor-pointer' />
           </label>
         </div>
-        <img src={assets.send_button} alt="" className='w-7 cursor-pointer' />
+        <img onClick={handleSendMessage} src={assets.send_button} alt="" className='w-7 cursor-pointer' />
       </div>
 
 

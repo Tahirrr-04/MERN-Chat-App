@@ -5,10 +5,10 @@ import bcrypt from "bcryptjs";
 
 // Signup a new user
 export const signup = async (req, res) => {
-  const { fullname, email, password, bio } = req.body;
+  const { fullName, email, password, bio } = req.body;
 
   try {
-    if (!fullname || !email || !password || !bio) {
+    if (!fullName || !email || !password || !bio) {
       return res.json({ success: false, message: "Missing Details" });
     }
 
@@ -22,7 +22,7 @@ export const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = await User.create({
-      fullname,
+      fullName,
       email,
       password: hashedPassword,
       bio,
